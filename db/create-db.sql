@@ -25,7 +25,7 @@ CREATE TABLE users
     is_blocked      tinyint(1) default 0 not null,
     is_archived     tinyint(1) default 0 not null,
     phone_number    varchar(10)          not null,
-    profile_picture varchar(100)         null,
+    profile_picture varchar(500)         null,
     constraint users_roles_role_id_fk
         foreign key (role_id) references roles (role_id)
 );
