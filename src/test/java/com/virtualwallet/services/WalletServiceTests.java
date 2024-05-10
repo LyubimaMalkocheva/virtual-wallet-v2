@@ -147,7 +147,7 @@ public class WalletServiceTests {
         when(userService.getRecipient(userFilter)).thenReturn(expectedUsers);
 
         // Act
-        List<User> result = walletService.getRecipient(userFilter);
+        List<User> result = userService.getRecipient(userFilter);
 
         // Assert
         verify(userService).getRecipient(userFilter);
@@ -581,7 +581,7 @@ public class WalletServiceTests {
                 .thenReturn(expectedTransactions);
 
         // Act
-        List<CardToWalletTransaction> result = walletService.getUserCardTransactions(walletId, user, transactionFilter);
+        List<CardToWalletTransaction> result = cardTransactionService.getUserCardTransactions(walletId, user, transactionFilter);
 
         // Assert
         assertEquals(expectedTransactions.size(), result.size());

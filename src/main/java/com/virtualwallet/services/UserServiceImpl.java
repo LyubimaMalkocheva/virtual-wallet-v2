@@ -57,8 +57,6 @@ public class UserServiceImpl implements UserService {
     public List<User> getRecipient(UserModelFilterOptions userFilter) {
         return repository.getAllWithFilter(userFilter);
     }
-
-
     @Override
     public User get(int id, User user) {
         verifyUserAccess(user, id);

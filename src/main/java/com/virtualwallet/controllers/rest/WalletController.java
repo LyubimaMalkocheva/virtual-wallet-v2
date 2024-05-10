@@ -16,6 +16,7 @@ import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.input_model_dto.CardTransactionDto;
 import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
 import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
+import com.virtualwallet.services.contracts.CardTransactionService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,13 +48,15 @@ public class WalletController {
     private final TransactionResponseMapper transactionResponseMapper;
     private final TransactionMapper transactionMapper;
 
+    private final CardTransactionService cardTransactionService;
+
     public WalletController(UserService userService,
                             AuthenticationHelper authHelper,
                             WalletService walletService,
                             WalletMapper walletMapper,
                             UserMapper userMapper,
                             TransactionResponseMapper transactionResponseMapper,
-                            TransactionMapper transactionMapper) {
+                            TransactionMapper transactionMapper, CardTransactionService cardTransactionService) {
         this.userService = userService;
         this.authHelper = authHelper;
         this.walletService = walletService;
@@ -61,6 +64,7 @@ public class WalletController {
         this.userMapper = userMapper;
         this.transactionResponseMapper = transactionResponseMapper;
         this.transactionMapper = transactionMapper;
+        this.cardTransactionService = cardTransactionService;
     }
 
     @Operation(summary = GET_ALL_WALLETS_SUMMARY, description = GET_ALL_WALLETS_DESCRIPTION)
@@ -199,7 +203,7 @@ public class WalletController {
 
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
-                    walletService.getUserCardTransactions(wallet_id, user, transactionModelFilterOptions);
+                    cardTransactionService.getUserCardTransactions(wallet_id, user, transactionModelFilterOptions);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
@@ -264,7 +268,7 @@ public class WalletController {
         try {
             User user = authHelper.tryGetUser(headers);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
-            CardToWalletTransaction transactionResult = walletService
+            CardToWalletTransaction transactionResult = cardTransactionService
                     .transactionWithCard(user, card_id, wallet_id, cardTransaction);
             return ResponseEntity.status(HttpStatus.CREATED).body(transactionResult);
         } catch (UnauthorizedOperationException e) {
@@ -296,7 +300,7 @@ public class WalletController {
                 username, email, phoneNumber, sortBy, orderBy);
         try {
             authHelper.tryGetUser(headers);
-            List<User> recipient = walletService.getRecipient(userFilter);
+            List<User> recipient = userService.getRecipient(userFilter);
             return userMapper.toRecipientDto(recipient);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
