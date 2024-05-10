@@ -34,7 +34,6 @@ public class WalletServiceImpl implements WalletService {
     private final UserService userService;
     private final CardMapper cardMapper;
     private final WalletTransactionService walletTransactionService;
-    private final CardTransactionService cardTransactionService;
 
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository,
@@ -42,15 +41,13 @@ public class WalletServiceImpl implements WalletService {
                              WebClient dummyApiWebClient,
                              UserService userService,
                              CardMapper cardMapper,
-                             WalletTransactionService walletTransactionService,
-                             CardTransactionService cardTransactionService) {
+                             WalletTransactionService walletTransactionService) {
         this.walletRepository = walletRepository;
         this.cardService = cardService;
         this.dummyApiWebClient = dummyApiWebClient;
         this.userService = userService;
         this.cardMapper = cardMapper;
         this.walletTransactionService = walletTransactionService;
-        this.cardTransactionService = cardTransactionService;
     }
 
     @Override
@@ -143,23 +140,6 @@ public class WalletServiceImpl implements WalletService {
         } else {
             walletRepository.update(senderWallet);
         }
-    }
-
-    @Override
-    public CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
-                                                       CardToWalletTransaction cardTransaction) {
-        Wallet wallet = getWalletById(user, wallet_id);
-        Card card = cardService.getCard(card_id, user, user.getId());
-        String responseResult = sendTransferRequest(card);
-        if (responseResult.equals(APPROVED_TRANSFER)) {
-            wallet.setBalance(cardTransaction.getAmount() + wallet.getBalance());
-            cardTransactionService.approveTransaction(cardTransaction, user, card, wallet);
-            walletRepository.update(wallet);
-        } else if (responseResult.equals(DECLINED_TRANSFER)) {
-            cardTransactionService.declineTransaction(cardTransaction, user, card, wallet);
-            walletRepository.update(wallet);
-        }
-        return cardTransaction;
     }
 
     @Override
@@ -266,32 +246,11 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getById(wallet_id);
     }
 
-    private WebClient.ResponseSpec populateResponseSpec(WebClient.RequestHeadersSpec<?> headersSpec) {
-        return headersSpec.header(
-                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .ifNoneMatch("*")
-                .ifModifiedSince(ZonedDateTime.now())
-                .retrieve();
-    }
-
     private Wallet verifyWallet(int wallet_id, User user) {
         Wallet wallet;
         wallet = checkWalletExistence(wallet_id);
         verifyIfUserIsWalletOwner(wallet, user);
         return wallet;
-    }
-
-
-    private String sendTransferRequest(Card card) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
-        WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
-        CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
-        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
-        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
-        Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
-        return response.block();
     }
 
     private void checkIfWalletNameExistsInUserList(String walletName, User user) {

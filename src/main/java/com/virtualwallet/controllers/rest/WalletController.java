@@ -268,7 +268,7 @@ public class WalletController {
         try {
             User user = authHelper.tryGetUser(headers);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
-            CardToWalletTransaction transactionResult = walletService
+            CardToWalletTransaction transactionResult = cardTransactionService
                     .transactionWithCard(user, card_id, wallet_id, cardTransaction);
             return ResponseEntity.status(HttpStatus.CREATED).body(transactionResult);
         } catch (UnauthorizedOperationException e) {

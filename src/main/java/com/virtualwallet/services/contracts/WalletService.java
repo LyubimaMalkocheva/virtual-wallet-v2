@@ -32,8 +32,8 @@ public interface WalletService {
 
     Wallet checkIbanExistence(String ibanTo);
 
-    CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
-                                                CardToWalletTransaction cardTransaction);
+//    CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
+//                                                CardToWalletTransaction cardTransaction);
 
     Wallet getByStringField(String id, String s);
 

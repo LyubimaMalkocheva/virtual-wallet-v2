@@ -455,7 +455,7 @@ public class WalletMvcController {
         try {
             cardService.authorizeCardAccess(cardDto.getCardId(), user);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardDto);
-            walletService.transactionWithCard(user, cardDto.getCardId(), wallet_id, cardTransaction);
+            cardTransactionService.transactionWithCard(user, cardDto.getCardId(), wallet_id, cardTransaction);
             return "redirect:/wallets/" + wallet_id + "/transfers";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());

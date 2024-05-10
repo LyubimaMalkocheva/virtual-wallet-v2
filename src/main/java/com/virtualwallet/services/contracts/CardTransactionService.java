@@ -23,4 +23,6 @@ public interface CardTransactionService {
 
     void declineTransaction(CardToWalletTransaction cardTransaction, User user, Card card, Wallet wallet);
 
+    CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
+                                                CardToWalletTransaction cardTransaction);
 }
