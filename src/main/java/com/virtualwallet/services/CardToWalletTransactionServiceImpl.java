@@ -8,6 +8,7 @@ import com.virtualwallet.services.contracts.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
@@ -40,7 +41,7 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     public List<CardToWalletTransaction> getUserCardTransactions(int walletId,
                                                                  User user,
                                                                  CardTransactionModelFilterOptions transactionFilter) {
-        return cardTransactionRepository.getAllUserCardTransactions(walletId, user, transactionFilter);
+        return new ArrayList<>(cardTransactionRepository.getAllUserCardTransactions(walletId, user, transactionFilter));
     }
 
     @Override

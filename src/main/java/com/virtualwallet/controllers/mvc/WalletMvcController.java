@@ -13,10 +13,7 @@ import com.virtualwallet.models.mvc_input_model_dto.CardMvcTransactionDto;
 import com.virtualwallet.models.mvc_input_model_dto.TransactionModelFilterDto;
 import com.virtualwallet.models.mvc_input_model_dto.UserModelFilterDto;
 import com.virtualwallet.models.response_model_dto.*;
-import com.virtualwallet.services.contracts.CardService;
-import com.virtualwallet.services.contracts.UserService;
-import com.virtualwallet.services.contracts.WalletService;
-import com.virtualwallet.services.contracts.WalletTypeService;
+import com.virtualwallet.services.contracts.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -44,6 +41,8 @@ public class WalletMvcController {
     private final TransactionResponseMapper transactionResponseMapper;
     private final TransactionMapper transactionMapper;
 
+    private final CardTransactionService cardTransactionService;
+
     public WalletMvcController(AuthenticationHelper authHelper,
                                WalletService walletService,
                                UserService userService,
@@ -51,7 +50,7 @@ public class WalletMvcController {
                                CardService cardService, WalletTypeService walletTypeService,
                                WalletMapper walletMapper, CardResponseMapper cardMapper,
                                TransactionResponseMapper transactionResponseMapper,
-                               TransactionMapper transactionMapper) {
+                               TransactionMapper transactionMapper, CardTransactionService cardTransactionService) {
         this.authHelper = authHelper;
         this.walletService = walletService;
         this.userService = userService;
@@ -62,6 +61,7 @@ public class WalletMvcController {
         this.cardMapper = cardMapper;
         this.transactionResponseMapper = transactionResponseMapper;
         this.transactionMapper = transactionMapper;
+        this.cardTransactionService = cardTransactionService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -298,7 +298,7 @@ public class WalletMvcController {
                     populateCardTransactionFilterOptions(transactionFilterDto);
 
             List<CardToWalletTransaction> cardTransactions =
-                    walletService.getUserCardTransactions(wallet_id, user, transactionFilter);
+                    cardTransactionService.getUserCardTransactions(wallet_id, user, transactionFilter);
 
             List<TransactionResponseDto> outputTransactions = transactionResponseMapper
                     .convertCardTransactionsToDto(cardTransactions);
@@ -336,7 +336,7 @@ public class WalletMvcController {
         try {
             userService.isUserBlocked(user);
             UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
-            List<User> userList = walletService.getRecipient(userFilter);
+            List<User> userList = userService.getRecipient(userFilter);
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
             walletService.getWalletById(user, wallet_id);
             model.addAttribute("recipientList", recipientList);
@@ -373,7 +373,7 @@ public class WalletMvcController {
         if (errors.hasErrors()) {
             UserModelFilterDto userFilterDto = new UserModelFilterDto();
             UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
-            List<User> userList = walletService.getRecipient(userFilter);
+            List<User> userList = userService.getRecipient(userFilter);
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
             model.addAttribute("recipientList", recipientList);
             model.addAttribute("newTransaction", transactionDto);
@@ -484,7 +484,7 @@ public class WalletMvcController {
 
         try {
             UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
-            List<User> userList = walletService.getRecipient(userFilter);
+            List<User> userList = userService.getRecipient(userFilter);
             List<WalletUserDto> walletUserList = userMapper.toWalletUserDto(userList);
             Wallet wallet = walletService.getWalletById(user, wallet_id);
             walletService.checkWalletOwnership(user, wallet_id);

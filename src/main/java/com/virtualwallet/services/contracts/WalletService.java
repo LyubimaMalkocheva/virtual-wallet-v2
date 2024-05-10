@@ -15,8 +15,6 @@ public interface WalletService {
 
     List<Wallet> getAllJoinWallets(User user);
 
-    List<User> getRecipient(UserModelFilterOptions userFilter);
-
     Wallet getWalletById(User user, int wallet_id);
 
     Wallet createWallet(User user, Wallet wallet);
@@ -27,9 +25,6 @@ public interface WalletService {
 
     List<WalletToWalletTransaction> getUserWalletTransactions
             (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id);
-
-    List<CardToWalletTransaction> getUserCardTransactions
-            (int walletId, User user, CardTransactionModelFilterOptions transactionFilter);
 
     WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id);
 

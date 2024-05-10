@@ -77,11 +77,6 @@ public class WalletServiceImpl implements WalletService {
 
 
     @Override
-    public List<User> getRecipient(UserModelFilterOptions userFilter) {
-        return userService.getRecipient(userFilter);
-    }
-
-    @Override
     public Wallet getWalletById(User user, int wallet_id) {
         checkWalletOwnership(user, wallet_id);
 
@@ -127,12 +122,6 @@ public class WalletServiceImpl implements WalletService {
             (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
         checkWalletOwnership(user, wallet_id);
         return walletTransactionService.getUserWalletTransactions(user, transactionFilter, wallet_id);
-    }
-
-    @Override
-    public List<CardToWalletTransaction> getUserCardTransactions
-            (int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
-        return new ArrayList<>(cardTransactionService.getUserCardTransactions(walletId, user, transactionFilter));
     }
 
     @Override
