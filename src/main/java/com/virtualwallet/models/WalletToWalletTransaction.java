@@ -1,5 +1,6 @@
 package com.virtualwallet.models;
 
+import com.virtualwallet.models.enums.CategoryType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -37,10 +38,14 @@ public class WalletToWalletTransaction {
     @JoinColumn(name = "status_id")
     private Status status;
 
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private TransactionCategory category;
+
 
     public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time,
                                      int transactionTypeId, User sender, int recipientWalletId,
-                                     int walletId, Status status) {
+                                     int walletId, Status status, TransactionCategory category) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.time = time;
@@ -49,6 +54,7 @@ public class WalletToWalletTransaction {
         this.recipientWalletId = recipientWalletId;
         this.walletId = walletId;
         this.status = status;
+        this.category = category;
     }
 
     public WalletToWalletTransaction() {
@@ -115,6 +121,14 @@ public class WalletToWalletTransaction {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public TransactionCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TransactionCategory category) {
+        this.category = category;
     }
 
     @Override
