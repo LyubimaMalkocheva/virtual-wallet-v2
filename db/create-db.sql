@@ -39,14 +39,14 @@ CREATE TABLE wallet_types
 
 CREATE TABLE wallets
 (
-    wallet_id   int auto_increment
+    wallet_id      int auto_increment
         primary key,
-    iban        varchar(34)                not null,
-    balance     double precision default 0,
-    is_archived tinyint(1)       default 0 not null,
-    created_by  int                        not null,
-    name        varchar(30)                not null,
-    wallet_type_id int  not null,
+    iban           varchar(34)                not null,
+    balance        double precision default 0,
+    is_archived    tinyint(1)       default 0 not null,
+    created_by     int                        not null,
+    name           varchar(30)                not null,
+    wallet_type_id int                        not null,
     constraint wallets_users_user_id_fk
         foreign key (created_by) references users (user_id),
     constraint wallets_wallet_types_type_id_fk
@@ -63,7 +63,7 @@ CREATE TABLE user_wallets
         foreign key (user_id) references users (user_id) on delete cascade,
     constraint users_wallets_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id) on delete cascade,
-            primary key (user_id, wallet_id)
+    primary key (user_id, wallet_id)
 );
 
 CREATE TABLE card_types
@@ -84,7 +84,7 @@ CREATE TABLE cards
 (
     card_id               int auto_increment
         primary key,
-    number                varchar(100)          not null,
+    number                varchar(100)         not null,
     expiration_date       datetime             not null,
     card_type_id          int                  not null,
     card_holder_full_name varchar(50)          not null,
@@ -116,7 +116,12 @@ CREATE TABLE transaction_types
         primary key,
     type                varchar(15)
 );
-
+CREATE TABLE categories
+(
+    category_id   int auto_increment
+        primary key,
+    category_name varchar(30) not null
+);
 CREATE TABLE wallet_transactions
 (
     wallet_transaction_id int auto_increment
@@ -128,6 +133,7 @@ CREATE TABLE wallet_transactions
     recipient_wallet_id   int              not null,
     wallet_id             int              not null,
     status_id             int              not null,
+    category_id           int              not null,
     constraint wallet_transactions_transaction_types_transaction_type_id_fk
         foreign key (transaction_type_id) references transaction_types (transaction_type_id),
     constraint wallet_transactions_users_user_id_fk
@@ -137,7 +143,9 @@ CREATE TABLE wallet_transactions
     constraint wallet_transactions_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id),
     constraint wallet_transactions_statuses_status_id_fk
-        foreign key (status_id) references statuses (status_id)
+        foreign key (status_id) references statuses (status_id),
+    constraint wallet_transactions_categories_category_id_fk
+        foreign key (category_id) references categories (category_id)
 );
 
 CREATE TABLE card_transactions
