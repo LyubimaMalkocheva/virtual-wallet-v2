@@ -115,5 +115,6 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
         walletToWalletTransactionIncoming
                 .setRecipientWalletId(transactionFrom.getWalletId());
         walletToWalletTransactionIncoming.setWalletId(transactionFrom.getRecipientWalletId());
+        walletToWalletTransactionIncoming.setCategory(transactionFrom.getCategory());
     }
 }
