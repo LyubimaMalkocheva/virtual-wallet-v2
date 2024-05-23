@@ -6,6 +6,7 @@ import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.input_model_dto.CardTransactionDto;
 import com.virtualwallet.models.input_model_dto.TransactionDto;
 import com.virtualwallet.models.mvc_input_model_dto.CardMvcTransactionDto;
+import com.virtualwallet.services.TransactionCategoryServiceImpl;
 import com.virtualwallet.services.contracts.StatusService;
 import com.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,14 @@ public class TransactionMapper {
     private final WalletService walletService;
     private final StatusService statusService;
 
+    private final TransactionCategoryServiceImpl transactionCategoryService;
+
     @Autowired
     public TransactionMapper(WalletService walletService,
-                             StatusService statusService) {
+                             StatusService statusService, TransactionCategoryServiceImpl transactionCategoryService) {
         this.walletService = walletService;
         this.statusService = statusService;
+        this.transactionCategoryService = transactionCategoryService;
     }
 
     public WalletToWalletTransaction fromDto(TransactionDto transactionDto, User user, int walletId) {
@@ -38,7 +42,7 @@ public class TransactionMapper {
                 (walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         walletToWalletTransaction.setTime(LocalDateTime.now());
         walletToWalletTransaction.setWalletId(walletId);
-
+        walletToWalletTransaction.setCategory(transactionCategoryService.getCategoryById(transactionDto.getCategory()));
         return walletToWalletTransaction;
     }
 
@@ -47,6 +51,7 @@ public class TransactionMapper {
         walletToWalletTransaction.setTransactionId(id);
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
         walletToWalletTransaction.setSender(user);
+        walletToWalletTransaction.setCategory(transactionCategoryService.getCategoryById(transactionDto.getCategory()));
         walletToWalletTransaction.setRecipientWalletId
                 (walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         return walletToWalletTransaction;
@@ -67,6 +72,4 @@ public class TransactionMapper {
         cardToWalletTransaction.setTime(LocalDateTime.now());
         return cardToWalletTransaction;
     }
-
-
 }

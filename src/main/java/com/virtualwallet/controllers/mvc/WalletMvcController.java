@@ -40,8 +40,9 @@ public class WalletMvcController {
     private final CardResponseMapper cardMapper;
     private final TransactionResponseMapper transactionResponseMapper;
     private final TransactionMapper transactionMapper;
-
     private final CardTransactionService cardTransactionService;
+
+    private final TransactionCategoryService transactionCategoryService;
 
     public WalletMvcController(AuthenticationHelper authHelper,
                                WalletService walletService,
@@ -50,7 +51,7 @@ public class WalletMvcController {
                                CardService cardService, WalletTypeService walletTypeService,
                                WalletMapper walletMapper, CardResponseMapper cardMapper,
                                TransactionResponseMapper transactionResponseMapper,
-                               TransactionMapper transactionMapper, CardTransactionService cardTransactionService) {
+                               TransactionMapper transactionMapper, CardTransactionService cardTransactionService, TransactionCategoryService transactionCategoryService) {
         this.authHelper = authHelper;
         this.walletService = walletService;
         this.userService = userService;
@@ -62,6 +63,7 @@ public class WalletMvcController {
         this.transactionResponseMapper = transactionResponseMapper;
         this.transactionMapper = transactionMapper;
         this.cardTransactionService = cardTransactionService;
+        this.transactionCategoryService = transactionCategoryService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -342,6 +344,7 @@ public class WalletMvcController {
             model.addAttribute("recipientList", recipientList);
             model.addAttribute("newTransaction", new TransactionDto());
             model.addAttribute("walletId", wallet_id);
+            model.addAttribute("categories", transactionCategoryService.getAllCategories());
             model.addAttribute("recipientFilter", userFilterDto);
             return "CreateNewTransactionVIew";
         } catch (EntityNotFoundException e) {
@@ -377,6 +380,7 @@ public class WalletMvcController {
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
             model.addAttribute("recipientList", recipientList);
             model.addAttribute("newTransaction", transactionDto);
+            model.addAttribute("categories", transactionCategoryService.getAllCategories());
             model.addAttribute("walletId", wallet_id);
             model.addAttribute("recipientFilter", new UserModelFilterDto());
             return "CreateNewTransactionVIew";

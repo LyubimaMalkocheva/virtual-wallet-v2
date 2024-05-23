@@ -364,6 +364,7 @@
                             <th>Amount</th>
                             <th>Sender</th>
                             <th>Recipient</th>
+                            <th>Type</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -385,6 +386,7 @@
                             </td>
                             <td th:text="${walletTrans.sender}">Sender</td>
                             <td th:text="${walletTrans.recipient}">Recipient</td>
+                            <td th:text="${walletTrans.category.getCategoryType()}">Category</td>
                             <td th:switch="${walletTrans.status}">
                                 <button th:case="'Confirmed'" type="button"
                                         class="btn btn-success rounded"
